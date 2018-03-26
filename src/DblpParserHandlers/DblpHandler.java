@@ -1,7 +1,6 @@
 package DblpParserHandlers;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.FileWriter;
@@ -9,27 +8,39 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class DblpHandler extends DefaultHandler {
-    int currentLevel;
-    GroundTag currentElement;
-    String currentTag;
+    private int currentLevel;
+    private GroundTag currentElement;
+    private String currentTag;
 
-    Query query;
-    PrintWriter incollectionWriter;
+    private Query query;
+    private PrintWriter incollectionWriter;
+    private PrintWriter bookWriter;
+    private PrintWriter proceedingWriter;
 
 
     public DblpHandler() throws IOException {
         super();
-        incollectionWriter = new PrintWriter(new FileWriter("./incollection.txt"));
+        incollectionWriter = new PrintWriter(new FileWriter("./incollection.sql"));
+        bookWriter = new PrintWriter(new FileWriter("./book.sql"));
+        proceedingWriter = new PrintWriter(new FileWriter("./proceedings.sql"));
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
         currentLevel++;
         if (currentLevel == 2) {
             switch (qName) {
                 case "incollection":
                     this.currentElement = GroundTag.INCOLLLECTION;
-                    query = new Inproceeding();
+                    query = new Incollection();
+                    break;
+                case "book":
+                    this.currentElement = GroundTag.BOOK;
+                    query = new Book();
+                    break;
+                case "proceedings":
+                    this.currentElement = GroundTag.PROCEEDING;
+                    query = new Proceeding();
                     break;
                 default:
                     this.currentElement = GroundTag.NONE;
@@ -41,19 +52,39 @@ public class DblpHandler extends DefaultHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         String str = new String(ch, start, length).trim();
         switch (currentElement) {
             case INCOLLLECTION:
                 switch (currentTag) {
                     case "title":
-                        ((Inproceeding) query).setTitle(str);
+                        ((Incollection) query).setTitle(str);
                         break;
                     case "year":
-                        ((Inproceeding) query).setYear(str);
+                        ((Incollection) query).setYear(str);
                         break;
                     case "booktitle":
-                        ((Inproceeding) query).setBooktitle(str);
+                        ((Incollection) query).setBooktitle(str);
+                        break;
+                }
+                break;
+            case BOOK:
+                switch (currentTag) {
+                    case "title":
+                        ((Book) query).setTitle(str);
+                        break;
+                    case "year":
+                        ((Book) query).setYear(str);
+                        break;
+                }
+                break;
+            case PROCEEDING:
+                switch (currentTag) {
+                    case "title":
+                        ((Proceeding) query).setTitle(str);
+                        break;
+                    case "year":
+                        ((Proceeding) query).setYear(str);
                         break;
                 }
                 break;
@@ -62,35 +93,27 @@ public class DblpHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
 
-        if (currentElement.equals(GroundTag.INCOLLLECTION) && currentLevel == 2)
-            incollectionWriter.println(this.query.getQueryStmt());
-//            System.out.println(this.query.getQueryStmt());
-
+        if (currentLevel == 2) {
+            switch (currentElement) {
+                case INCOLLLECTION:
+                    incollectionWriter.println(this.query.getQueryStmt());
+                    break;
+                case BOOK:
+                    bookWriter.println(this.query.getQueryStmt());
+                    break;
+                case PROCEEDING:
+                    proceedingWriter.println(this.query.getQueryStmt());
+                    break;
+            }
+        }
 
         if (currentLevel == 2) currentElement = GroundTag.NONE;
         currentLevel--;
     }
 
     enum GroundTag {
-        NONE(""), INCOLLLECTION("incollection");
-
-        String tagString;
-
-        GroundTag(String tagString) {
-            this.tagString = tagString;
-        }
-    }
-
-    class Incollection {
-        String title, year, url, booktitle;
-
-        public Incollection(String title, String year, String url, String booktitle) {
-            this.title = title;
-            this.year = year;
-            this.url = url;
-            this.booktitle = booktitle;
-        }
+        NONE, INCOLLLECTION, PROCEEDING, BOOK
     }
 }
