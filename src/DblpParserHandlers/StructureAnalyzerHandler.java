@@ -10,6 +10,14 @@ public class StructureAnalyzerHandler extends DefaultHandler {
     private static final boolean DEV_MODE = true;
     int currentLevel;
     int totalGroundTag;
+    int totalIncollectionTag;
+    int totalWwwTag;
+    int totalMastersthesisTag;
+    int totalBookTag;
+    int totalProceedingsTag;
+    int totalPhdthesisTag;
+    int totalInproceedingsTag;
+    int totalArticleTag;
 
     Set<String> Tags;
     HashMap<String, Range> incollectionTagCountRange;
@@ -20,6 +28,7 @@ public class StructureAnalyzerHandler extends DefaultHandler {
     HashMap<String, Range> phdthesisTagCountRange;
     HashMap<String, Range> inproceedingsTagCountRange;
     HashMap<String, Range> articleTagCountRange;
+
 
     HashMap<String, Integer> counter;
 
@@ -34,8 +43,6 @@ public class StructureAnalyzerHandler extends DefaultHandler {
         phdthesisTagCountRange = new HashMap<>();
         inproceedingsTagCountRange = new HashMap<>();
         articleTagCountRange = new HashMap<>();
-        currentLevel = 0;
-        totalGroundTag = 0;
     }
 
     @Override
@@ -48,6 +55,32 @@ public class StructureAnalyzerHandler extends DefaultHandler {
         if (currentLevel == 2) {
             Tags.add(qName);
             totalGroundTag++;
+            switch (qName) {
+                case "incollection":
+                    totalIncollectionTag++;
+                    break;
+                case "www":
+                    totalWwwTag++;
+                    break;
+                case "mastersthesis":
+                    totalMastersthesisTag++;
+                    break;
+                case "book":
+                    totalBookTag++;
+                    break;
+                case "proceedings":
+                    totalProceedingsTag++;
+                    break;
+                case "phdthesis":
+                    totalPhdthesisTag++;
+                    break;
+                case "inproceedings":
+                    totalInproceedingsTag++;
+                    break;
+                case "article":
+                    totalArticleTag++;
+                    break;
+            }
 
             counter = new HashMap<>();
         }
@@ -65,8 +98,7 @@ public class StructureAnalyzerHandler extends DefaultHandler {
                            int start,
                            int length)
             throws SAXException {
-//        String str = new String(ch, start, length).trim();
-//        System.out.println("characters: " + str);
+
     }
 
     @Override
@@ -76,7 +108,6 @@ public class StructureAnalyzerHandler extends DefaultHandler {
             throws SAXException {
         if (currentLevel == 2) {
             switch (qName) {
-
                 case "incollection":
                     updateTagCountRange(this.incollectionTagCountRange, counter);
                     break;
@@ -95,7 +126,7 @@ public class StructureAnalyzerHandler extends DefaultHandler {
                 case "phdthesis":
                     updateTagCountRange(this.phdthesisTagCountRange, counter);
                     break;
-                case "inproceeding":
+                case "inproceedings":
                     updateTagCountRange(this.inproceedingsTagCountRange, counter);
                     break;
                 case "article":
@@ -141,6 +172,14 @@ public class StructureAnalyzerHandler extends DefaultHandler {
         for (String s : Tags) System.out.print(s + " ");
         System.out.println();
         System.out.println(this.totalGroundTag + " tags in total.");
+        System.out.println(this.totalIncollectionTag + " incollection tags in total.");
+        System.out.println(this.totalWwwTag + " www tags in total.");
+        System.out.println(this.totalMastersthesisTag + " mastersthesis tags in total.");
+        System.out.println(this.totalBookTag + " book tags in total.");
+        System.out.println(this.totalProceedingsTag + " proceedings tags in total.");
+        System.out.println(this.totalPhdthesisTag + " phdthesis tags in total.");
+        System.out.println(this.totalInproceedingsTag + " inproceedings tags in total.");
+        System.out.println(this.totalArticleTag + " article tags in total.");
 
         System.out.print("incollection tag ranges: ");
         printRange(incollectionTagCountRange);
