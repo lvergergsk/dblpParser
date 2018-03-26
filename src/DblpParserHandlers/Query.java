@@ -59,11 +59,55 @@ class Book extends Query {
     }
 }
 
-class Proceeding extends Query {
+class Proceedings extends Query {
     private String title, year;
 
-    Proceeding() {
+    Proceedings() {
         tableName = "proceedings";
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    @Override
+    String getQueryStmt() {
+        return String.format("INSERT INTO %s (title,year) VALUES ('%s',%s);",
+                tableName, title, year);
+    }
+}
+
+class Inproceedings extends Query {
+    private String title, year;
+
+    Inproceedings() {
+        tableName = "inproceedings";
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    @Override
+    String getQueryStmt() {
+        return String.format("INSERT INTO %s (title,year) VALUES ('%s',%s);",
+                tableName, title, year);
+    }
+}
+
+class Article extends Query {
+    private String title, year;
+
+    Article() {
+        tableName = "article";
     }
 
     public void setTitle(String title) {

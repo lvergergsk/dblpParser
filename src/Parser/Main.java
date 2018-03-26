@@ -1,10 +1,10 @@
 // -DentityExpansionLimit=2000000
+//ref: http://www.ws-attacks.org/XML_Entity_Expansion
+//ref: https://www.youtube.com/watch?v=WQUiub2hc0c
 
 package Parser;
 
 import DblpParserHandlers.DblpHandler;
-import DblpParserHandlers.StructureAnalyzerHandler;
-import DblpParserHandlers.TestHandler;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

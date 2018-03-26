@@ -16,6 +16,8 @@ public class DblpHandler extends DefaultHandler {
     private PrintWriter incollectionWriter;
     private PrintWriter bookWriter;
     private PrintWriter proceedingWriter;
+    private PrintWriter inproceedingWriter;
+    private PrintWriter articleWriter;
 
 
     public DblpHandler() throws IOException {
@@ -23,6 +25,8 @@ public class DblpHandler extends DefaultHandler {
         incollectionWriter = new PrintWriter(new FileWriter("./incollection.sql"));
         bookWriter = new PrintWriter(new FileWriter("./book.sql"));
         proceedingWriter = new PrintWriter(new FileWriter("./proceedings.sql"));
+        inproceedingWriter = new PrintWriter(new FileWriter("./inproceedings.sql"));
+        articleWriter = new PrintWriter(new FileWriter("./article.sql"));
     }
 
     @Override
@@ -39,8 +43,16 @@ public class DblpHandler extends DefaultHandler {
                     query = new Book();
                     break;
                 case "proceedings":
-                    this.currentElement = GroundTag.PROCEEDING;
-                    query = new Proceeding();
+                    this.currentElement = GroundTag.PROCEEDINGS;
+                    query = new Proceedings();
+                    break;
+                case "inproceedings":
+                    this.currentElement = GroundTag.INPROCEEDINGS;
+                    query = new Inproceedings();
+                    break;
+                case "article":
+                    this.currentElement = GroundTag.ARTICLE;
+                    query = new Article();
                     break;
                 default:
                     this.currentElement = GroundTag.NONE;
@@ -78,13 +90,33 @@ public class DblpHandler extends DefaultHandler {
                         break;
                 }
                 break;
-            case PROCEEDING:
+            case PROCEEDINGS:
                 switch (currentTag) {
                     case "title":
-                        ((Proceeding) query).setTitle(str);
+                        ((Proceedings) query).setTitle(str);
                         break;
                     case "year":
-                        ((Proceeding) query).setYear(str);
+                        ((Proceedings) query).setYear(str);
+                        break;
+                }
+                break;
+            case INPROCEEDINGS:
+                switch (currentTag) {
+                    case "title":
+                        ((Inproceedings) query).setTitle(str);
+                        break;
+                    case "year":
+                        ((Inproceedings) query).setYear(str);
+                        break;
+                }
+                break;
+            case ARTICLE:
+                switch (currentTag) {
+                    case "title":
+                        ((Article) query).setTitle(str);
+                        break;
+                    case "year":
+                        ((Article) query).setYear(str);
                         break;
                 }
                 break;
@@ -103,8 +135,14 @@ public class DblpHandler extends DefaultHandler {
                 case BOOK:
                     bookWriter.println(this.query.getQueryStmt());
                     break;
-                case PROCEEDING:
+                case PROCEEDINGS:
                     proceedingWriter.println(this.query.getQueryStmt());
+                    break;
+                case INPROCEEDINGS:
+                    inproceedingWriter.println(this.query.getQueryStmt());
+                    break;
+                case ARTICLE:
+                    articleWriter.println(this.query.getQueryStmt());
                     break;
             }
         }
@@ -114,6 +152,6 @@ public class DblpHandler extends DefaultHandler {
     }
 
     enum GroundTag {
-        NONE, INCOLLLECTION, PROCEEDING, BOOK
+        NONE, INCOLLLECTION, PROCEEDINGS, INPROCEEDINGS, ARTICLE, BOOK
     }
 }
